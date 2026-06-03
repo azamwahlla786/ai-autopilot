@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Builder - AI AutoPilot</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        /* Essential fix for download button */
+        #download-btn { width: 100%; margin-top: 20px; cursor: pointer; background: #0f172a; color: white; border: none; padding: 10px; border-radius: 5px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <h2>AI AutoPilot</h2>
+            <ul>
+                <li><a href="index.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                <li><a href="resume.html" class="active"><i class="fa-solid fa-file-invoice"></i> AI Resume Builder</a></li>
+                <li><a href="jobs.html"><i class="fa-solid fa-briefcase"></i> Job Matching</a></li>
+                <li><a href="cover-letter.html"><i class="fa-solid fa-envelope-open-text"></i> Cover Letter</a></li>
+                <li><a href="interview.html"><i class="fa-solid fa-user-tie"></i> Mock Interview</a></li>
+                <li><a href="notifications.html"><i class="fa-solid fa-bell"></i> Notifications</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header>
+                <h1>AI Resume Engineering Hub</h1>
+            </header>
+
+            <div class="workspace-grid">
+                <div class="input-panel">
+                    <div class="section-card">
+                        <form id="aiResumeForm">
+                            <div class="input-group"><label>Full Name</label><input type="text" id="inputName" required></div>
+                            <div class="input-group"><label>Target Job Title</label><input type="text" id="inputJobTitle" required></div>
+                            <div class="input-group"><label>Skills (Comma Separated)</label><textarea id="inputSkills" rows="2" required></textarea></div>
+                            <div class="input-group"><label>Qualification</label><input type="text" id="inputEdu" required></div>
+                            <div class="input-group"><label>Project Description</label><textarea id="inputDescription" rows="3" required></textarea></div>
+                            <button type="button" class="btn" id="generateResumeBtn">Build & Save Master Resume</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="preview-panel">
+                    <div class="canvas-box" id="resumeCanvas">
+                        <div id="canvasPlaceholder" class="canvas-placeholder">Fill the form and click Build.</div>
+                        <div id="canvasLoader" class="loader-container hidden"><h4>Generating...</h4></div>
+                        
+                        <div id="generatedResumeOutput" class="resume-template hidden">
+                            <div id="resume-content-print">
+                                <div class="resume-output-header">
+                                    <h2 id="outName">NAME</h2>
+                                    <p id="outTitle">JOB TITLE</p>
+                                </div>
+                                <div class="resume-section-block"><h4>Education</h4><p id="outEdu"></p></div>
+                                <div class="resume-section-block"><h4>Key Projects</h4><p id="outProj"></p></div>
+                                <div class="resume-section-block"><h4>Skills</h4><div id="outSkills"></div></div>
+                            </div>
+                            <button id="download-btn">⬇️ Download PDF</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+<script>
+document.getElementById('generateResumeBtn').addEventListener('click', function () {
+    const name = document.getElementById('inputName').value.trim();
+    const jobTitle = document.getElementById('inputJobTitle').value.trim();
+    const skills = document.getElementById('inputSkills').value.trim();
+    const edu = document.getElementById('inputEdu').value.trim();
+    const proj = document.getElementById('inputDescription').value.trim();
+
+    if (!name || !jobTitle || !skills) return alert("Please fill all fields.");
+
+    document.getElementById('canvasPlaceholder').classList.add('hidden');
+    document.getElementById('generatedResumeOutput').classList.add('hidden');
+    document.getElementById('canvasLoader').classList.remove('hidden');
+
+    setTimeout(() => {
+        document.getElementById('canvasLoader').classList.add('hidden');
+        document.getElementById('generatedResumeOutput').classList.remove('hidden');
+
+        document.getElementById('outName').innerText = name.toUpperCase();
+        document.getElementById('outTitle').innerText = jobTitle.toUpperCase();
+        document.getElementById('outEdu').innerText = edu;
+        document.getElementById('outProj').innerText = proj;
+
+        const skillsContainer = document.getElementById('outSkills');
+        skillsContainer.innerHTML = '';
+        skills.split(',').forEach(s => {
+            if(s.trim()) skillsContainer.innerHTML += `<span class="resume-skill-tag">${s.trim()}</span> `;
+        });
+    }, 1000);
+});
+
+// PDF Download Function
+document.getElementById("download-btn").addEventListener("click", function () {
+    const element = document.getElementById("resume-content-print");
+    html2pdf().from(element).save('My_Resume.pdf');
+});
+</script>
+</body>
+</html>

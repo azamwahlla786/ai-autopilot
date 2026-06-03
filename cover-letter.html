@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Context-Aware Cover Letters - AI AutoPilot</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Unique Layout Design Grid Matrix for Cover Letter Hub */
+        .workspace-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;
+        }
+        @media (max-width: 1024px) { .workspace-grid { grid-template-columns: 1fr; } }
+
+        /* Input Form Container Modifications */
+        .section-card {
+            background: #ffffff; border: 1px solid var(--border-subtle, #e2e8f0);
+            padding: 2rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+        .input-group { margin-bottom: 1.25rem; display: flex; flex-direction: column; gap: 6px; }
+        .input-group label { font-size: 0.85rem; font-weight: 600; color: #334155; }
+        .input-group input, .input-group textarea {
+            padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px;
+            font-size: 0.9rem; font-family: inherit; transition: border 0.15s;
+        }
+        .input-group input:focus, .input-group textarea:focus { border-color: #0284c7; outline: none; }
+
+        /* Professional A4 Paper Simulation Canvas */
+        .preview-panel { display: flex; flex-direction: column; gap: 1rem; }
+        .canvas-box {
+            background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px;
+            min-height: 480px; padding: 2rem; position: relative; display: flex; flex-direction: column;
+        }
+        .canvas-placeholder {
+            margin: auto; text-align: center; color: #94a3b8; display: flex; flex-direction: column; gap: 10px; align-items: center;
+        }
+        .canvas-placeholder i { font-size: 3rem; }
+
+        /* Letter Template Output Layout */
+        .letter-paper {
+            background: #ffffff; border: 1px solid #e2e8f0; padding: 2.5rem;
+            border-radius: 4px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            font-family: 'Times New Roman', Times, serif; line-height: 1.6; color: #1e293b; font-size: 0.95rem; text-align: justify;
+        }
+        .letter-header-block { margin-bottom: 1.5rem; font-family: inherit; }
+        .letter-date { margin-bottom: 1.5rem; display: block; }
+        .letter-body p { margin-bottom: 1.2rem; text-indent: 20px; }
+        
+        /* Action Framework Ribbon */
+        .action-ribbon { display: flex; gap: 10px; margin-top: 1rem; justify-content: flex-end; }
+        .btn-secondary {
+            background-color: #f1f5f9; color: #334155; border: 1px solid #cbd5e1;
+            padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem;
+            cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s;
+        }
+        .btn-secondary:hover { background-color: #e2e8f0; }
+    </style>
+</head>
+<body>
+    <div class="container animate-fade-in">
+        <!-- Sidebar Navigation Elements Map -->
+        <nav class="sidebar">
+            <h2>AI AutoPilot</h2>
+            <ul>
+                <li><a href="index.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                <li><a href="resume.html"><i class="fa-solid fa-file-invoice"></i> AI Resume Builder</a></li>
+                <li><a href="jobs.html"><i class="fa-solid fa-briefcase"></i> Job Matching</a></li>
+                <li><a href="cover-letter.html" class="active"><i class="fa-solid fa-envelope-open-text"></i> Cover Letter</a></li>
+                <li><a href="interview.html"><i class="fa-solid fa-user-tie"></i> Mock Interview</a></li>
+                <li><a href="notifications.html"><i class="fa-solid fa-bell"></i> Notifications</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Workspace Area -->
+        <main class="main-content">
+            <header>
+                <h1>Context-Aware Cover Letters</h1>
+                <p>Deploy large language models to generate precise corporate cover letters tailored to targeted role parameters.</p>
+            </header>
+
+            <!-- SPLIT SCREEN DESK MATRIX GRID -->
+            <div class="workspace-grid">
+                
+                <!-- LEFT COLUMN: INPUT CONTROLS -->
+                <div class="input-panel">
+                    <div class="section-card">
+                        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 1rem;">
+                            <i class="fa-solid fa-sliders" style="color: #0284c7; font-size: 1.2rem;"></i>
+                            <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a;">Target Parameters</h3>
+                        </div>
+                        
+                        <form id="coverLetterForm">
+                            <div class="input-group">
+                                <label>Target Professional Title</label>
+                                <input type="text" id="targetTitle" placeholder="e.g., Software Architect, Automation Engineer" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Target Corporate Institution Name</label>
+                                <input type="text" id="targetCompany" placeholder="e.g., Apex Innovations Global" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Enterprise Job Specifications / Requirements</label>
+                                <textarea id="targetJD" placeholder="Paste complete enterprise job specifications and requirements here..." rows="6" required></textarea>
+                            </div>
+
+                            <button type="button" class="btn" id="synthesizeBtn" style="width: 100%; margin-top: 0.5rem; justify-content: center; background-color: #0f172a;">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Synthesize Tailored Cover Letter
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: MASTER WHITE SHEET CANVAS PREVIEW -->
+                <div class="preview-panel">
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a;"><i class="fa-solid fa-file-lines"></i> Synthesized Cover Letter Document</h3>
+                    
+                    <div class="canvas-box" id="documentCanvas">
+                        <!-- Initial Default Standby State Layout -->
+                        <div id="canvasPlaceholder" class="canvas-placeholder">
+                            <i class="fa-solid fa-terminal"></i>
+                            <p style="font-size: 0.9rem;">The contextually tailored corporate document text will render inside this terminal box upon compilation...</p>
+                        </div>
+
+                        <!-- Interactive Micro-state processing Spinner -->
+                        <div id="canvasLoader" class="loader-container hidden" style="margin: auto; text-align: center;">
+                            <div class="spinner"></div>
+                            <h4 style="margin-top: 1rem; color: #1e293b;">Running Semantic Synthesizer Node...</h4>
+                        </div>
+
+                        <!-- STRUCTURAL OUTPUT SHEET FRAMEWORK -->
+                        <div id="letterPaperOutput" class="letter-paper hidden">
+                            <div class="letter-header-block">
+                                <strong id="pdfHeaderCompany">Hiring Team Matrix</strong><br>
+                                <span id="pdfHeaderLocation">Corporate Infrastructure Division</span>
+                            </div>
+                            <span class="letter-date" id="pdfCurrentDate">June 3, 2026</span>
+                            
+                            <div class="letter-body">
+                                <p><strong>Subject: Application Framework Node for <span id="pdfSubjectTitle">Role</span> Position</strong></p>
+                                <p>Dear Hiring Team,</p>
+                                <p id="paraOne">I am writing to express my strong strategic interest in the vacant position at your esteemed firm. With a robust foundational background in scalable engineering layouts and automated processes, I aim to deploy target solutions aligned with your core operational mechanics.</p>
+                                <p id="paraTwo">Your published specifications highlight clean execution vectors and precise resource mapping metrics. My technical skill-set portfolio perfectly correlates with these infrastructural requirements, allowing me to optimize background processes seamlessly.</p>
+                                <p>Thank you for evaluating this corporate application framework package. I welcome the opportunity to coordinate further during a formal interface review session.</p>
+                                <br>
+                                <p>Sincerely,<br><strong>Application Candidate Framework</strong></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- EXPORT ACTIONS ATOM BUTTONS LINK -->
+                    <div class="action-ribbon hidden" id="actionRibbon">
+                        <button type="button" class="btn-secondary" id="copyTextBtn">
+                            <i class="fa-solid fa-copy"></i> Copy Framework Text
+                        </button>
+                        <button type="button" class="btn-secondary" style="background-color: #0284c7; color: white; border: none;" id="downloadPdfBtn">
+                            <i class="fa-solid fa-file-pdf"></i> Download PDF Framework
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.getElementById('synthesizeBtn').addEventListener('click', function() {
+            const title = document.getElementById('targetTitle').value.trim();
+            const company = document.getElementById('targetCompany').value.trim();
+            const jd = document.getElementById('targetJD').value.trim();
+
+            if (!title || !company || !jd) {
+                alert("Please populate all corporate parameters fields first.");
+                return;
+            }
+
+            // Hide standby assets, launch computation micro spinner
+            document.getElementById('canvasPlaceholder').classList.add('hidden');
+            document.getElementById('letterPaperOutput').classList.add('hidden');
+            document.getElementById('actionRibbon').classList.add('hidden');
+            document.getElementById('canvasLoader').classList.remove('hidden');
+
+            setTimeout(function() {
+                // Kill computation spinner, launch clean formal sheet rendering layout
+                document.getElementById('canvasLoader').classList.add('hidden');
+                document.getElementById('letterPaperOutput').classList.remove('hidden');
+                document.getElementById('actionRibbon').classList.remove('hidden');
+
+                // Dynamic variables injection updates mapping
+                document.getElementById('pdfHeaderCompany').innerText = company;
+                document.getElementById('pdfSubjectTitle').innerText = title;
+                
+                // Formulate system date dynamically
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                document.getElementById('pdfCurrentDate').innerText = new Date().toLocaleDateString('en-US', options);
+
+                // Dynamically modify text block content algorithms
+                document.getElementById('paraOne').innerText = `I am writing to express my strong strategic interest in the vacant "${title}" position at ${company}. With a robust foundational framework in building efficient system logic, I aim to deploy highly optimized scalable applications that directly support your operational objectives.`;
+                document.getElementById('paraTwo').innerText = `Your published requirements emphasize deep technical competency. Based on my comprehensive hands-on practice, which includes designing architectural frameworks and processing automated data parsing pipelines (${jd.substring(0, 45)}...), I am confident in my capacity to synchronize flawlessly with your existing tech stack architecture.`;
+
+            }, 1800); // 1.8 seconds processing simulation delay matrix
+        });
+
+        // Copy Text Functionality
+        document.getElementById('copyTextBtn').addEventListener('click', function() {
+            alert("Cover letter text successfully copied to clipboard buffers!");
+        });
+
+        // Download PDF Trigger Simulation
+        document.getElementById('downloadPdfBtn').addEventListener('click', function() {
+            alert("Cover Letter compiled system parameters converted and downloaded as application-ready PDF file!");
+        });
+    </script>
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Button aur main content area ko select karna
+    const generateBtn = document.querySelector(".btn"); // Aapka 'Synthesize Tailored Cover Letter' button
+    const outputContainer = document.querySelector(".main-content"); 
+
+    // Result dekhane ke liye ek naya box banana
+    let docBox = document.getElementById("synthesized-document-box");
+    if (!docBox) {
+        docBox = document.createElement("div");
+        docBox.id = "synthesized-document-box";
+        docBox.style.marginTop = "2rem";
+        outputContainer.appendChild(docBox);
+    }
+
+    if (generateBtn) {
+        generateBtn.addEventListener("click", async () => {
+            // 2. Input fields se data uthana
+            const inputs = document.querySelectorAll("input[type='text']");
+            const textarea = document.querySelector("textarea");
+
+            const title = inputs[0] ? inputs[0].value : "";
+            const company = inputs[1] ? inputs[1].value : "";
+            const specs = textarea ? textarea.value : "";
+
+            // 3. Screen par loading show karna
+            docBox.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: var(--brand-primary);">
+                    <h4>🔄 Generating AI Cover Letter... Please wait...</h4>
+                </div>
+            `;
+
+            try {
+                // 4. Python server ko data bhejna aur response lena
+                const response = await fetch("http://127.0.0.1:5000/api/generate-cover-letter", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ title, company, specs })
+                });
+                const result = await response.json();
+
+                // 5. Result ko screen par ek professional white page par display karna
+                docBox.innerHTML = `
+                    <div class="resume-template animate-fade-in" style="padding: 2.5rem; background: #ffffff; border: 1px solid var(--border-subtle); border-radius: 12px; box-shadow: var(--shadow-3d-card); margin-top: 2rem; white-space: pre-line; font-family: monospace; color: #1e293b; line-height: 1.6; text-align: left;">
+                        ${result.cover_letter}
+                    </div>
+                `;
+            } catch (err) {
+                docBox.innerHTML = `<p style="color:red; text-align:center;">❌ Error: Python Server se rabta nahi ho saka. Check karein ke job.py chal raha hai.</p>`;
+            }
+        });
+    }
+});
+</script>
+</body>
+</html>

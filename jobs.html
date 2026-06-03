@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithmic Job Matching - AI AutoPilot</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Modern Resume Upload Zone Section Styling */
+        .upload-zone-wrapper {
+            background: #ffffff; border: 1px solid var(--border-subtle, #e2e8f0);
+            padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;
+        }
+        .upload-dropzone {
+            border: 2px dashed #cbd5e1; border-radius: 6px; padding: 1.5rem;
+            text-align: center; cursor: pointer; transition: all 0.2s ease; background: #f8fafc;
+        }
+        .upload-dropzone:hover { border-color: #0284c7; background: #f0f9ff; }
+        .upload-dropzone i { font-size: 2rem; color: #64748b; margin-bottom: 0.5rem; }
+        
+        /* Automation Control Hub Elements */
+        .automation-control-panel {
+            display: flex; gap: 12px; margin-bottom: 2rem;
+            background: #ffffff; border: 1px solid var(--border-subtle, #e2e8f0);
+            padding: 1.25rem; border-radius: 8px; align-items: center;
+        }
+        .btn-start {
+            background-color: #16a34a; color: #ffffff; font-weight: 700;
+            padding: 0.8rem 2rem; border-radius: 6px; border: none; cursor: pointer;
+            display: flex; align-items: center; gap: 8px; transition: background 0.15s;
+        }
+        .btn-start:hover { background-color: #15803d; }
+        .btn-start:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .btn-stop {
+            background-color: #dc2626; color: #ffffff; font-weight: 700;
+            padding: 0.8rem 2rem; border-radius: 6px; border: none; cursor: pointer;
+            display: flex; align-items: center; gap: 8px; transition: background 0.15s;
+        }
+        .btn-stop:hover { background-color: #b91c1c; }
+        .btn-stop:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .status-pulse-container { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 600; }
+        .pulse-dot { width: 10px; height: 10px; border-radius: 50%; background-color: #94a3b8; }
+        .pulse-active { background-color: #16a34a; box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.2); animation: pulse-anim 1.5s infinite; }
+        @keyframes pulse-anim { 0% { transform: scale(0.95); } 50% { transform: scale(1.1); } 100% { transform: scale(0.95); } }
+
+        /* Application & Apply Elements */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-box { background: #ffffff; border-radius: 12px; width: 460px; padding: 2.5rem; text-align: center; }
+        .btn-apply { background-color: #0284c7; color: #ffffff; font-weight: 600; border: none; padding: 0.6rem 1.5rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
+        .btn-apply:hover { background-color: #0369a1; }
+    </style>
+</head>
+<body>
+    <div class="container animate-fade-in">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <h2>AI AutoPilot</h2>
+            <ul>
+                <li><a href="index.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                <li><a href="resume.html"><i class="fa-solid fa-file-invoice"></i> AI Resume Builder</a></li>
+                <li><a href="jobs.html" class="active"><i class="fa-solid fa-briefcase"></i> Job Matching</a></li>
+                <li><a href="cover-letter.html"><i class="fa-solid fa-envelope-open-text"></i> Cover Letter</a></li>
+                <li><a href="interview.html"><i class="fa-solid fa-user-tie"></i> Mock Interview</a></li>
+                <li><a href="notifications.html"><i class="fa-solid fa-bell"></i> Notifications</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Workspace Area -->
+        <main class="main-content">
+            <header>
+                <h1>Algorithmic Job Matching</h1>
+                <p>Upload your resume, then run the background bot engine to map your details and inject a continuous stream of vacancies.</p>
+            </header>
+
+            <!-- 1. DYNAMIC RESUME UPLOAD OPTION BAR -->
+            <div class="upload-zone-wrapper">
+                <div class="upload-dropzone" onclick="document.getElementById('hiddenFileInput').click()">
+                    <i class="fa-solid fa-cloud-arrow-up" id="uploadIcon"></i>
+                    <h3 id="uploadStatusTitle" style="font-size: 1rem; font-weight: 600; color: #1e293b; margin: 5px 0;">Click to upload client resume</h3>
+                    <p id="uploadStatusDesc" style="font-size: 0.85rem; color: #64748b;">Supports PDF, DOCX or JSON profile matrix data</p>
+                    <input type="file" id="hiddenFileInput" style="display: none;" accept=".pdf,.docx,.json">
+                </div>
+            </div>
+
+            <!-- 2. AUTOMATION ENGINE COMMAND HUB BLOCK (START & STOP) -->
+            <div class="automation-control-panel">
+                <button type="button" class="btn-start" id="engineStartBtn">
+                    <i class="fa-solid fa-play"></i> Start Automation Bot
+                </button>
+                <button type="button" class="btn-stop" id="engineStopBtn" disabled>
+                    <i class="fa-solid fa-stop"></i> Stop Scraper Engine
+                </button>
+                
+                <div class="status-pulse-container">
+                    <div class="pulse-dot" id="enginePulseDot"></div>
+                    <span id="engineStatusText" style="color: #64748b;">Engine Standby</span>
+                </div>
+            </div>
+
+            <!-- STREAM SEARCHING LIVE LOADER -->
+            <div id="continuousSearchLoader" class="section-card loader-container hidden" style="margin-bottom: 2rem; border-color: #cbd5e1; background: #ffffff;">
+                <div class="spinner" style="border-top-color: #16a34a;"></div>
+                <h4 style="color: #1e293b;">Automated Scraping Stream Active...</h4>
+                <p id="loaderDynamicMessage">Scanning active LinkedIn and Indeed portal arrays for matching nodes...</p>
+            </div>
+
+            <!-- LIVE INJECTED VACANCIES TARGET LIST -->
+            <h2 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem; color: #0f172a;"><i class="fa-solid fa-list-check"></i> Discovered Job Openings Stream</h2>
+            <div class="jobs-list" id="realtimeLiveContainer">
+                <!-- Initial base view from image_f4a07f.png -->
+                <div class="section-card" id="waitingPlaceholder" style="text-align: center; padding: 4rem;">
+                    <i class="fa-solid fa-robot" style="font-size: 3rem; color: #94a3b8; margin-bottom: 1rem;"></i>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem;">Automated matching engine is offline. Trigger the <strong>Start Automation Bot</strong> utility to initiate global matching queries.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- PIPELINE DISPATCH MODAL POPUP -->
+    <div id="applyModal" class="modal-overlay hidden">
+        <div class="modal-box animate-fade-in">
+            <i class="fa-solid fa-circle-check" style="font-size: 3.5rem; color: #16a34a; margin-bottom: 1rem;"></i>
+            <h3 style="font-size: 1.3rem; font-weight: 700;" id="modalTitleText">Application Submitted!</h3>
+            <p style="font-size: 0.9rem; color: #64748b; margin-top: 0.5rem; line-height: 1.4;">Your profile has been transmitted through secure gateway handshakes. Targeted ATS systems matched cleanly.</p>
+            <button type="button" class="btn" style="margin-top: 1.5rem; background-color: #0f172a;" onclick="document.getElementById('applyModal').classList.add('hidden')">Return to Feed</button>
+        </div>
+    </div>
+
+    <script>
+        let scraperIntervalId = null; 
+        let databaseIndex = 0;
+        let isResumeUploaded = false;
+        let clientTargetTitle = "Automation Specialist"; // Default fall-back context
+
+        // UI Target Elements
+        const fileInput = document.getElementById('hiddenFileInput');
+        const uploadIcon = document.getElementById('uploadIcon');
+        const uploadTitle = document.getElementById('uploadStatusTitle');
+        const uploadDesc = document.getElementById('uploadStatusDesc');
+
+        const startBtn = document.getElementById('engineStartBtn');
+        const stopBtn = document.getElementById('engineStopBtn');
+        const pulseDot = document.getElementById('enginePulseDot');
+        const statusText = document.getElementById('engineStatusText');
+        const searchLoader = document.getElementById('continuousSearchLoader');
+        const liveContainer = document.getElementById('realtimeLiveContainer');
+        const waitingPlaceholder = document.getElementById('waitingPlaceholder');
+
+        // REAL-TIME RESUME UPLOAD HANDLING
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                isResumeUploaded = true;
+                // UI Green State Success Validation Modification
+                uploadIcon.className = "fa-solid fa-circle-check";
+                uploadIcon.style.color = "#16a34a";
+                uploadTitle.innerText = `Resume Connected: ${file.name}`;
+                uploadTitle.style.color = "#16a34a";
+                uploadDesc.innerHTML = `<strong>AI Extracted Match-core:</strong> Python Automation, Infrastructure Web Control, System Scripting`;
+
+                // Automatically infer target jobs based on data parsing
+                if(file.name.toLowerCase().includes('python') || file.name.toLowerCase().includes('automation')) {
+                    clientTargetTitle = "Web Automation Engineer";
+                }
+            }
+        });
+
+        // Mock Database Pipeline Stream Data Array
+        const baseDatabaseStream = [
+            { title: "Enterprise Web Automation Engineer", platform: "LinkedIn", tagClass: "li-tag", company: "Apex Innovations Global", score: "94%", desc: "Advanced scraping scripts, deployment validation frameworks, structured state control pipelines." },
+            { title: "Junior Infrastructure & Systems Engineer", platform: "Indeed", tagClass: "id-tag", company: "DataTech Cloud Systems", score: "68%", desc: "Python automated microservices, database clusters management, automated endpoint triggers." },
+            { title: "Full-Stack System Test Architect", platform: "LinkedIn", tagClass: "li-tag", company: "NextGen Software Systems", score: "89%", desc: "HTML5, CSS3 structural layouts architecture, web scraping automation workflows." }
+        ];
+
+        // START ENGINE BOT
+        startBtn.addEventListener('click', function() {
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            
+            pulseDot.classList.add('pulse-active');
+            statusText.innerText = "Bot Engine Scanning Live Streams...";
+            statusText.style.color = "#16a34a";
+            
+            searchLoader.classList.remove('hidden');
+            if(waitingPlaceholder) waitingPlaceholder.style.display = "none";
+
+            // Continuous Real-Time Scraper Stream Matrix
+            scraperIntervalId = setInterval(function() {
+                if(databaseIndex >= baseDatabaseStream.length) databaseIndex = 0;
+
+                const currentJob = baseDatabaseStream[databaseIndex];
+                
+                // If a resume was uploaded, intelligently adapt matching context dynamically
+                let displayTitle = currentJob.title;
+                let displayScore = currentJob.score;
+                if(isResumeUploaded && databaseIndex === 0) {
+                    displayTitle = clientTargetTitle;
+                    displayScore = "97%"; // Higher percentage match on custom upload context
+                }
+
+                const cardBlock = document.createElement('div');
+                cardBlock.className = 'job-card animate-fade-in';
+                cardBlock.style.marginTop = "1rem";
+                cardBlock.innerHTML = `
+                    <div class="job-details">
+                        <h3>${displayTitle} <span class="platform-tag ${currentJob.tagClass}">${currentJob.platform}</span></h3>
+                        <span class="company-name">${currentJob.company}</span>
+                        <p><strong>Core Stack Requirement:</strong> ${currentJob.desc}</p>
+                    </div>
+                    <div class="match-section">
+                        <span class="match-score-badge ${parseFloat(displayScore) < 75 ? 'medium-score' : ''}">${displayScore} Semantic Match</span>
+                        <button type="button" class="btn-apply" onclick="triggerApplicationPopup('${displayTitle}')">
+                            <i class="fa-solid fa-paper-plane"></i> Apply Now
+                        </button>
+                    </div>
+                `;
+
+                liveContainer.insertBefore(cardBlock, liveContainer.firstChild);
+                databaseIndex++;
+
+                document.getElementById('loaderDynamicMessage').innerText = `Fetched role node: "${displayTitle}" parsed directly onto live tracking list...`;
+            }, 2500); 
+        });
+
+        // STOP ENGINE BOT
+        stopBtn.addEventListener('click', function() {
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            
+            pulseDot.classList.remove('pulse-active');
+            statusText.innerText = "Automation Stopped";
+            statusText.style.color = "#dc2626";
+            
+            searchLoader.classList.add('hidden');
+            clearInterval(scraperIntervalId);
+        });
+
+        function triggerApplicationPopup(title) {
+            document.getElementById('modalTitleText').innerText = "Dispatched for: " + title;
+            document.getElementById('applyModal').classList.remove('hidden');
+        }
+    </script>
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+    const startBtn = document.querySelector(".btn"); // Aapka 'Start Automation Bot' button
+    const streamContainer = document.querySelector(".canvas-box"); // Jahan empty state robot icon hai
+
+    if (startBtn) {
+        startBtn.addEventListener("click", async () => {
+            // 1. UI ko loading state me convert karein
+            streamContainer.innerHTML = `
+                <div class="loader-container">
+                    <div class="spinner"></div>
+                    <h4>AI Engine Active</h4>
+                    <p>Scraping live professional streams from LinkedIn and matching with your core profile matrix...</p>
+                </div>
+            `;
+
+            try {
+                // 2. Apne Flask Backend Server se real data fetch karein
+                const response = await fetch("http://127.0.0.1:5000/api/jobs");
+                const jobs = await response.json();
+
+                if (jobs.length === 0) {
+                    streamContainer.innerHTML = `<p style="text-align:center; padding: 2rem; color: var(--text-secondary);">No active streams found at the moment. Try again.</p>`;
+                    return;
+                }
+
+                // 3. Container ko clear karke dynamic cards insert karein
+                streamContainer.innerHTML = `<div class="jobs-list" style="display: flex; flex-direction: column; gap: 1.5rem; width: 100%;"></div>`;
+                const jobsListElement = streamContainer.querySelector(".jobs-list");
+
+                jobs.forEach(job => {
+                    // Score ke hisab se badge ka color select karne ke liye
+                    const scoreClass = job.match_score >= 90 ? "high" : "medium";
+
+                    const cardHTML = `
+                        <div class="job-card animate-fade-in" style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 1.5rem; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-3d-card);">
+                            <div class="job-details">
+                                <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">
+                                    ${job.title} 
+                                    <span class="platform-tag li-tag" style="font-size: 0.7rem; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; margin-left: 8px;">${job.platform}</span>
+                                </h3>
+                                <span class="company-name" style="color: var(--brand-primary); font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem;">${job.company}</span>
+                                <p style="color: var(--text-secondary); font-size: 0.85rem;"><i class="fas fa-map-marker-alt"></i> ${job.location}</p>
+                            </div>
+                            <div class="match-section" style="text-align: right; display: flex; flex-direction: column; gap: 0.75rem; align-items: flex-end;">
+                                <span class="score ${scoreClass}" style="font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem;">AI Match: ${job.match_score}%</span>
+                                <a href="${job.link}" target="_blank" class="btn-sm" style="text-decoration: none; padding: 0.5rem 1rem; font-size: 0.85rem; border: 1px solid var(--border-subtle); border-radius: 6px; color: var(--text-primary); background: #f8fafc; font-weight: 600;">Apply on Platform</a>
+                            </div>
+                        </div>
+                    `;
+                    jobsListElement.innerHTML += cardHTML;
+                });
+
+            } catch (error) {
+                console.error("Backend connection error:", error);
+                streamContainer.innerHTML = `<p style="text-align:center; padding: 2rem; color: red;">Backend integration error. Make sure your Python server is running on port 5000.</p>`;
+            }
+        });
+    }
+});
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const startBtn = document.querySelector(".btn"); // Aapka 'Start Automation Bot' button
+        // Note: Agar aapke content box par '.canvas-box' class nahi hai, to jo bhi main display area hai uski class check kar lein
+        const streamContainer = document.querySelector(".canvas-box") || document.querySelector(".main-content"); 
+
+        if (startBtn) {
+            startBtn.addEventListener("click", async () => {
+                // 1. UI par beautiful loading spinner dikhana
+                streamContainer.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: var(--brand-primary);">
+                        <h4 style="margin-bottom: 0.5rem;">🔄 AI Engine Active...</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Scraping live professional streams from LinkedIn...</p>
+                    </div>
+                `;
+
+                try {
+                    // 2. Python backend server se live jobs fetch karna
+                    const response = await fetch("http://127.0.0.1:5000/api/jobs");
+                    const jobs = await response.json();
+
+                    if (jobs.length === 0) {
+                        streamContainer.innerHTML = `<p style="text-align:center; padding: 2rem; color: var(--text-secondary);">No active streams found. Try again in a moment.</p>`;
+                        return;
+                    }
+
+                    // 3. Purana view saaf karke list structure ready karna
+                    streamContainer.innerHTML = `<div class="jobs-list" style="display: flex; flex-direction: column; gap: 1.5rem; width: 100%; margin-top: 1rem;"></div>`;
+                    const jobsListElement = streamContainer.querySelector(".jobs-list");
+
+                    // 4. Har job ke liye beautiful dynamic cards render karna
+                    jobs.forEach(job => {
+                        const cardHTML = `
+                            <div class="job-card animate-fade-in" style="background: #ffffff; border: 1px solid #e2e8f0; padding: 1.5rem; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                                <div class="job-details" style="text-align: left;">
+                                    <h3 style="font-size: 1.15rem; font-weight: 700; color: #1e293b; margin: 0 0 0.25rem 0;">
+                                        ${job.title} 
+                                        <span style="font-size: 0.7rem; background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 4px; margin-left: 8px; font-weight: 600;">${job.platform}</span>
+                                    </h3>
+                                    <span style="color: #0284c7; font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem;">${job.company}</span>
+                                    <p style="color: #64748b; font-size: 0.85rem; margin: 0;"><i class="fas fa-map-marker-alt"></i> ${job.location}</p>
+                                </div>
+                                <div class="match-section" style="text-align: right; display: flex; flex-direction: column; gap: 0.75rem; align-items: flex-end;">
+                                    <span style="background: #e0fdf4; color: #16a34a; font-weight: 700; padding: 4px 12px; border-radius: 6px; font-size: 0.8rem;">AI Match: ${job.match_score}%</span>
+                                    <a href="${job.link}" target="_blank" style="text-decoration: none; padding: 0.5rem 1rem; font-size: 0.85rem; border: 1px solid #e2e8f0; border-radius: 6px; color: #1e293b; background: #f8fafc; font-weight: 600; display: inline-block;">Apply on Platform</a>
+                                </div>
+                            </div>
+                        `;
+                        jobsListElement.innerHTML += cardHTML;
+                    });
+
+                } catch (error) {
+                    console.error("Connection error:", error);
+                    streamContainer.innerHTML = `<p style="text-align:center; padding: 2rem; color: red;">❌ Backend integration error. Make sure your job.py server is running on port 5000.</p>`;
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>
+</body>
+</html>

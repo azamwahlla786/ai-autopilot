@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Behavioral Simulator - AI AutoPilot</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Modern Structured Layout for Simulator Desk */
+        .simulator-card {
+            background: #ffffff; border: 1px solid var(--border-subtle, #e2e8f0);
+            padding: 2rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.01);
+            margin-bottom: 2rem;
+        }
+        .question-box {
+            background: #f8fafc; border-left: 4px solid #0284c7; padding: 1.25rem;
+            border-radius: 0 8px 8px 0; margin-bottom: 1.5rem;
+        }
+        .question-box h3 { font-size: 0.9rem; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 0.25rem; }
+        .question-box p { font-size: 1.1rem; color: #0f172a; font-weight: 700; line-height: 1.5; }
+        
+        /* Response Input Field */
+        .response-textarea {
+            width: 100%; padding: 1rem; border: 1px solid #cbd5e1; border-radius: 6px;
+            font-size: 0.95rem; font-family: inherit; line-height: 1.5; resize: vertical; min-height: 140px;
+            margin-bottom: 1.25rem; transition: border-color 0.15s;
+        }
+        .response-textarea:focus { border-color: #0284c7; outline: none; }
+
+        /* Evaluation Grid Systems Layout */
+        .analytics-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; margin-top: 1rem; }
+        @media (max-width: 768px) { .analytics-grid { grid-template-columns: 1fr; } }
+
+        .score-display-panel {
+            background: #fafafa; border: 1px solid #e2e8f0; border-radius: 8px;
+            padding: 1.5rem; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .metric-score-badge {
+            font-size: 3rem; font-weight: 800; color: #16a34a; background: #f0f9ff;
+            width: 110px; height: 110px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            border: 4px solid #bbf7d0; box-shadow: 0 4px 10px rgba(22, 163, 74, 0.1); margin-bottom: 0.75rem;
+        }
+
+        .feedback-details-panel {
+            background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem;
+        }
+        .insight-tag {
+            display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 700;
+            padding: 4px 10px; border-radius: 4px; background: #f1f5f9; color: #334155; margin-bottom: 1rem;
+        }
+        .insight-tag.success { background: #dcfce7; color: #15803d; }
+
+        /* Code Recommendation Container */
+        .ai-recommendation-block {
+            background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.25rem; border-radius: 6px;
+            margin-top: 1rem; font-size: 0.9rem; line-height: 1.5; border-left: 4px solid #16a34a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container animate-fade-in">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <h2>AI AutoPilot</h2>
+            <ul>
+                <li><a href="index.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                <li><a href="resume.html"><i class="fa-solid fa-file-invoice"></i> AI Resume Builder</a></li>
+                <li><a href="jobs.html"><i class="fa-solid fa-briefcase"></i> Job Matching</a></li>
+                <li><a href="cover-letter.html"><i class="fa-solid fa-envelope-open-text"></i> Cover Letter</a></li>
+                <li><a href="interview.html" class="active"><i class="fa-solid fa-user-tie"></i> Mock Interview</a></li>
+                <li><a href="notifications.html"><i class="fa-solid fa-bell"></i> Notifications</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Workspace Area -->
+        <main class="main-content">
+            <header>
+                <h1>AI Behavioral Simulator</h1>
+                <p>Engage with automated enterprise interview matrices and receive detailed structural, grammar, and delivery feedback.</p>
+            </header>
+
+            <!-- SIMULATOR WORKBENCH CONTAINER -->
+            <div class="simulator-card">
+                <div class="question-box">
+                    <h3>Active Evaluation Metric Question:</h3>
+                    <p id="activeQuestionText">"Explain a complex architectural bottleneck you encountered during system optimization and your algorithmic methodology to resolve it."</p>
+                </div>
+
+                <textarea class="response-textarea" id="candidateResponseInput" placeholder="Input your structured technical behavioral response here..."></textarea>
+
+                <button type="button" class="btn" id="submitEvaluationBtn" style="width: 100%; justify-content: center; background-color: #0f172a; font-weight: 700; padding: 0.9rem;">
+                    <i class="fa-solid fa-microchip"></i> Submit Response For Processing
+                </button>
+            </div>
+
+            <!-- SYSTEM ANALYTICS MONITOR CORE BLOCK -->
+            <h2 style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin-bottom: 1rem;"><i class="fa-solid fa-chart-bar"></i> System Evaluation & Analytics</h2>
+            
+            <div class="section-card" id="analyticsWrapperCard">
+                <!-- Standby State Fragment -->
+                <div id="analyticsStandbyState" style="color: #64748b; font-size: 0.95rem; padding: 1rem 0;">
+                    Awaiting input submission to process professional delivery grading, tone assessment, and optimization insights...
+                </div>
+
+                <!-- Live Processing Engine Spinner Component -->
+                <div id="analyticsLoader" class="loader-container hidden" style="padding: 3rem 0; text-align: center;">
+                    <div class="spinner"></div>
+                    <h4 style="margin-top: 1rem; color: #1e293b;">Running Semantic Grammar & Delivery Evaluation...</h4>
+                    <p style="font-size: 0.85rem; color: #64748b;">Parsing lexical density vectors and response alignment algorithms...</p>
+                </div>
+
+                <!-- RICH DYNAMIC REPORT STRUCTURE -->
+                <div id="analyticsReportOutput" class="analytics-grid hidden">
+                    
+                    <!-- Left Score Circular Module -->
+                    <div class="score-display-panel">
+                        <div class="metric-score-badge" id="outputScoreVal">85%</div>
+                        <h4 style="font-size: 1rem; font-weight: 700; color: #0f172a;">Competency Rating</h4>
+                        <p style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">Strong Structural Response</p>
+                    </div>
+
+                    <!-- Right Analytical Details Module -->
+                    <div class="feedback-details-panel">
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <span class="insight-tag success"><i class="fa-solid fa-shield-halved"></i> STAR Framework Met</span>
+                            <span class="insight-tag" style="background: #e0f2fe; color: #0369a1;"><i class="fa-solid fa-wave-square"></i> Professional Tone</span>
+                        </div>
+
+                        <h4 style="font-size: 0.95rem; font-weight: 700; color: #1e293b; margin-bottom: 4px;">Grammatical & Content Assessment:</h4>
+                        <p id="assessmentParagraph" style="font-size: 0.9rem; color: #475569; line-height: 1.5; margin-bottom: 1rem;">
+                            Your answer demonstrates clear technical competence and describes the scenario beautifully. Grammatical composition is robust, showing strong communication flow.
+                        </p>
+
+                        <h4 style="font-size: 0.95rem; font-weight: 700; color: #16a34a; margin-bottom: 4px;"><i class="fa-solid fa-lightbulb"></i> AI Optimized Recommendation Response:</h4>
+                        <div class="ai-recommendation-block" id="aiRecommendationContent">
+                            "In my previous implementation, we observed a bottleneck in database read operations under heavy load. I resolved this by introducing a Redis caching layer and optimizing query execution trees, which lowered response latencies by 40%."
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        document.getElementById('submitEvaluationBtn').addEventListener('click', function() {
+            const userInput = document.getElementById('candidateResponseInput').value.trim();
+
+            if (userInput.length < 15) {
+                alert("Please formulate a complete, structured response before running AI evaluation matrices.");
+                return;
+            }
+
+            // Lock controls, kick-start processing animation sequences
+            document.getElementById('analyticsStandbyState').classList.add('hidden');
+            document.getElementById('analyticsReportOutput').classList.add('hidden');
+            document.getElementById('analyticsLoader').classList.remove('hidden');
+
+            setTimeout(function() {
+                // Kill loader node, show structured premium dashboard metrics reports
+                document.getElementById('analyticsLoader').classList.add('hidden');
+                document.getElementById('analyticsReportOutput').classList.remove('hidden');
+
+                // Advanced Logic: Real-time intelligent checking of text content matrix
+                if (userInput.toLowerCase().includes("database") || userInput.toLowerCase().includes("query")) {
+                    document.getElementById('outputScoreVal').innerText = "92%";
+                    document.getElementById('outputScoreVal').style.color = "#16a34a";
+                    document.getElementById('assessmentParagraph').innerText = "Excellent integration of infrastructure bottlenecks! Your input maps data structures neatly, demonstrating top-tier execution logic and clear situational command metrics.";
+                } else {
+                    document.getElementById('outputScoreVal').innerText = "74%";
+                    document.getElementById('outputScoreVal').style.color = "#ea580c"; // Orange tone warning state
+                    document.getElementById('assessmentParagraph').innerText = "The solution structure is correct, but could benefit from explicitly stating specific database or caching technologies used during the architectural pipeline resolution process.";
+                }
+
+            }, 2000); // 2 Seconds processing time simulation
+        });
+    </script>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // 1. Submit button aur system analytics container ko pakadna
+        const submitBtn = document.querySelector(".btn"); // 'Submit Response For Processing' button
+        const outputArea = document.querySelector(".main-content");
+
+        // Feedback display karne ke liye ek smart evaluation card banana
+        let evalBox = document.getElementById("evaluation-response-box");
+        if (!evalBox) {
+            evalBox = document.createElement("div");
+            evalBox.id = "evaluation-response-box";
+            evalBox.style.marginTop = "2rem";
+            outputArea.appendChild(evalBox);
+        }
+
+        if (submitBtn) {
+            submitBtn.addEventListener("click", async () => {
+                // 2. Textarea se user ka answer uthana
+                const userResponseText = document.querySelector("textarea").value;
+
+                // Loader state trigger karna
+                evalBox.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--brand-primary);">
+                        <h4>🔄 Processing AI Evaluation Metrics... Please wait...</h4>
+                    </div>
+                `;
+
+                try {
+                    // 3. Flask Server ko response POST request ke zariye bhejna
+                    const response = await fetch("http://127.0.0.1:5000/api/evaluate-interview", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ response: userResponseText })
+                    });
+                    const result = await response.json();
+
+                    // 4. Dynamic AI Analytics Card inject karna
+                    evalBox.innerHTML = `
+                        <div class="card animate-fade-in" style="margin-top: 1.5rem; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-left: 5px solid var(--brand-primary); padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow-3d-card);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text-primary);">AI Score Analysis</h3>
+                                <span style="background: #e0fdf4; color: #16a34a; font-weight: 700; padding: 6px 16px; border-radius: 20px; font-size: 0.9rem;">
+                                    ${result.score} Match
+                                </span>
+                            </div>
+                            <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; font-family: sans-serif;">
+                                ${result.feedback}
+                            </p>
+                        </div>
+                    `;
+                } catch (err) {
+                    evalBox.innerHTML = `<p style="color:red; text-align:center;">❌ Evaluation service offline. Check karein ke job.py chal raha hai.</p>`;
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>
+</body>
+</html>
